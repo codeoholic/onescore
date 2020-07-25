@@ -3,6 +3,8 @@ import styles from "./source/styles";
 import Animated from "react-native-reanimated";
 import {
     Dimensions,
+    Easing,
+    Fragment,
     Image,
     SafeAreaView,
     Text,
@@ -29,8 +31,10 @@ const summary_tabs = [
     {"heading":"Profile","description":"Your personal details.","result":"Good","icon":"perfect.png","comment":"details are consistent.","statistics":"3/3"}
 ];
 
+const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 const { interpolate, Extrapolate } = Animated;
 const y = new Animated.Value(0);
+const expand = new Animated.Value(0);
 
 const HEADER_HEIGHT = 120;
 const MARGIN = 44;
@@ -41,9 +45,11 @@ const CHART = "150,138 250,120";
 const CHART_MIN = 800;
 const CHART_MAX = 900;
 
+let expanded = false;
+
 const headerOpacityIn =  interpolate(y, {
     inputRange: [0, HEADER_HEIGHT - MARGIN],
-    outputRange: [0, 1],
+    outputRange: [1, 1],
     extrapolate: Extrapolate.CLAMP,
 })
 const headerOpacityOut =  interpolate(y, {
@@ -53,12 +59,22 @@ const headerOpacityOut =  interpolate(y, {
 })
 const headerPositionY =  interpolate(y, {
     inputRange: [0, HEADER_HEIGHT + MARGIN + PADDING],
-    outputRange: [0, -HEADER_HEIGHT - MARGIN - PADDING],
+    outputRange: [20, -HEADER_HEIGHT - MARGIN - PADDING],
     extrapolate: Extrapolate.CLAMP,
 })
 const headerWidth =  interpolate(y, {
     inputRange: [0, HEADER_HEIGHT],
     outputRange: [DEVICEWIDTH - 40, DEVICEWIDTH],
+    extrapolate: Extrapolate.CLAMP,
+})
+const keyWidth =  interpolate(y, {
+    inputRange: [0, HEADER_HEIGHT],
+    outputRange: [DEVICEWIDTH - 80, DEVICEWIDTH - 40],
+    extrapolate: Extrapolate.CLAMP,
+})
+const keyLeftPosition =  interpolate(y, {
+    inputRange: [0, HEADER_HEIGHT],
+    outputRange: [(DEVICEWIDTH - 80 - 2)*SCORE/900, (DEVICEWIDTH - 40 - 2)*SCORE/900],
     extrapolate: Extrapolate.CLAMP,
 })
 const headerWidthLeft =  interpolate(y, {
@@ -67,7 +83,7 @@ const headerWidthLeft =  interpolate(y, {
     extrapolate: Extrapolate.CLAMP,
 })
 const headerPositionDisplayY = interpolate(y, {
-    inputRange: [0, HEADER_HEIGHT - MARGIN],
+    inputRange: [0, HEADER_HEIGHT],
     outputRange: [-HEADER_HEIGHT - MARGIN - PADDING, 0],
     extrapolate: Extrapolate.CLAMP,
 })
@@ -78,12 +94,35 @@ const containerMarginTop =  interpolate(y, {
     extrapolate: Extrapolate.CLAMP,
 })
 
+const expandHeight =  expand.interpolate({
+    inputRange: [0, 1],
+    outputRange: [70, 140],
+    extrapolate: Extrapolate.CLAMP,
+})
+
+function expand_card(){
+    if(expanded === false){
+        Animated.timing(expand, {
+            toValue: 1,
+            duration: 200,
+            easing: Easing.in,
+        }).start();
+        expanded = true;
+    } else {
+        Animated.timing(expand, {
+            toValue: 0,
+            duration: 200,
+            easing: Easing.in,
+        }).start();
+        expanded = false;
+    }
+}
 function render_summary(){
     var summary = [];
     summary_tabs.map(function(value,index){
         summary.push(
-            <TouchableOpacity key={index} style={styles.card} activeOpacity={0.9}>
-                <View style={styles.split_view}>
+            <TouchableOpacity key={index} style={styles.card} activeOpacity={0.9} onPress={()=>expand_card()}>
+                <Animated.View style={[styles.split_view,{height: expandHeight}]}>
                     <View>
                         <Text style={[styles.color_blue,styles.font_14,styles.font_bold]}>{value.heading}</Text>
                         <Text style={[styles.color_black,styles.font_12,styles.margin_top_5]}>{value.description}</Text>
@@ -96,7 +135,7 @@ function render_summary(){
                         <Image source={require('./assets/perfect.png')} style={{width:30,height:30}}/>
                         <Text style={[styles.color_blue,styles.font_12,styles.font_bold]}>{value.result}</Text>
                     </View>
-                </View>
+                </Animated.View>
             </TouchableOpacity>
         )
     })
@@ -106,11 +145,13 @@ function render_summary(){
 }
 export default () => {
     return (
-        <SafeAreaView style={[styles.body,styles.flex]}>
-            <View style={styles.flex}>
+        <>
+        <SafeAreaView style={styles.fixed_header} />
+        <SafeAreaView style={[styles.body_white,styles.flex]}>
+            <View style={[styles.flex,styles.body]}>
 
 
-                <Animated.View style={[styles.header,styles.body_color_blue,{transform:[{translateY:headerPositionY}],width:headerWidth,left:headerWidthLeft,opacity:headerOpacityOut}]}>
+                <Animated.View style={[styles.header,styles.body_color_blue,{transform:[{translateY:headerPositionY}],width:headerWidth,left:headerWidthLeft,opacity:headerOpacityOut,zIndex:0}]}>
                     <View style={styles.split_view}>
                         <View>
                             <Text style={[styles.font_36,styles.font_bold,styles.color_white]}>Hi, Mohit</Text>
@@ -127,8 +168,8 @@ export default () => {
                     </View>
                     <View style={styles.margin_top_20}>
                         <View>
-                            <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} locations={[0,0.5,0.7,1]} colors={['#EB481C', '#DBA04D', '#638F21' ,'#318F47']} style={styles.key}/>
-                            <View style={[styles.key_position,{left:(DEVICEWIDTH - 80 - 2)*SCORE/900}]}/>
+                            <AnimatedGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} locations={[0,0.5,0.7,1]} colors={['#EB481C', '#DBA04D', '#638F21' ,'#318F47']} style={[styles.key,{width:keyWidth}]}/>
+                            <Animated.View style={[styles.key_position,{left:keyLeftPosition}]}/>
                         </View>
                         <View style={[styles.split_view,styles.margin_top_5]}>
                             <Text style={[styles.font_10,styles.color_white]}>300</Text>
@@ -149,15 +190,23 @@ export default () => {
                 </Animated.View>
 
 
-                <Animated.ScrollView style={[styles.padding_20,styles.flex]} onScroll={onScrollEvent({ y })} scrollEventThrottle={1} showsVerticalScrollIndicator={false}>
-                    <View style={styles.container}>
+                <Animated.ScrollView style={[styles.padding_20,styles.flex,{marginBottom: 50}]} onScroll={onScrollEvent({ y })} scrollEventThrottle={1} showsVerticalScrollIndicator={false}>
+                    <View style={[styles.container,{paddingBottom: 20}]}>
                         <Text style={[styles.font_24,styles.font_bold,styles.color_black,styles.margin_top_20]}>Credit Summary</Text>
                         <View style={styles.margin_top_20}>
                             {render_summary()}
                         </View>
                     </View>
                 </Animated.ScrollView>
+
+                <View style={[styles.fixed_moratorium,styles.split_view_align]}>
+                    <Text style={[styles.font_16,styles.font_bold,styles.color_black]}>Impact of RBI Moratorium</Text>
+                    <TouchableOpacity style={styles.button_small}>
+                        <Text style={[styles.text_uppercase,styles.font_12,styles.color_white]}>calculate now</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </SafeAreaView>
+        </>
     );
 };

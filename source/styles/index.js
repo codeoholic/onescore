@@ -20,10 +20,20 @@ export default StyleSheet.create({
     },
 
     body:{
-        backgroundColor: '#F3F1ED'
+        backgroundColor: '#F3F1ED',
+        zIndex: 10,
+        flex: 1
+    },
+    body_white:{
+        backgroundColor: '#FFF',
     },
     body_color_blue:{
         backgroundColor: BLUE
+    },
+    button_small:{
+        backgroundColor: BLUE,
+        padding: 10,
+        borderRadius: 8
     },
 
     card:{
@@ -55,6 +65,22 @@ export default StyleSheet.create({
 
     flex:{
         flex: 1
+    },
+    fixed_header:{
+        flex:0,
+        backgroundColor: '#fff',
+        zIndex: 1000
+    },
+    fixed_moratorium:{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        width: deviceWidth,
+        backgroundColor: '#fff',
+        padding: 10,
+        borderTopWidth: 1,
+        borderTopColor: '#dedede',
+        zIndex: 200
     },
     font_bold:{
         fontWeight: '700'
@@ -131,8 +157,16 @@ export default StyleSheet.create({
         flexDirection:'row',
         justifyContent: 'space-between'
     },
+    split_view_align:{
+        flexDirection:'row',
+        justifyContent: 'space-between',
+        alignItems:'center'
+    },
 
     text_align_right:{
         textAlign: 'right'
+    },
+    text_uppercase:{
+        textTransform: 'uppercase'
     }
 })
