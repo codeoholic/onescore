@@ -10,3 +10,6 @@ On the *left* is the **existing UI** and the *right* one is the **recommended UI
 
 ![Fresh Look ](https://mohit.sgp1.digitaloceanspaces.com/onescore/old_look.PNG?t=1 "Existing Look")
 ![Fresh Look ](https://mohit.sgp1.digitaloceanspaces.com/onescore/fresh_look_v0.2.png "Fresh Look")
+
+## Support
+[![BMC](https://mohit.sgp1.digitaloceanspaces.com/cdn/bmc-button.png)](https://www.buymeacoffee.com/codeoholic)
